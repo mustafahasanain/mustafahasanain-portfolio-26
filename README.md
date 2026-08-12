@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mustafa Hasanain — Personal Portfolio
 
-## Getting Started
+Personal portfolio site built with Next.js (App Router), TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## Requirements
+
+- Node.js 24 LTS
+- npm (the committed `package-lock.json` is authoritative)
+
+## Getting started
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The development server runs on http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local` when a phase introduces environment variables. Real `.env*` files are git-ignored.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Production build (also type-checks via the project-local `tsc`) |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `next typegen && tsc --noEmit` (route types are generated first, so this works without a build) |
+| `npm run test:e2e` | Playwright end-to-end tests |
+| `npm run verify` | lint → typecheck → build → e2e |
 
-To learn more about Next.js, take a look at the following resources:
+`npm run test:e2e` starts a fresh **production** server on port 3100, so it requires an existing build — run `npm run build` first. The dedicated port keeps the test isolated from a development server on port 3000. `npm run verify` performs the steps in the correct order and is the recommended local gate.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Playwright needs its browser binaries once per machine:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx playwright install chromium
+```
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/app/        App Router routes, layout, and global styles
+e2e/            Playwright specs and shared test helpers
+public/         Static assets
+docs/           Project context and phase specifications
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+- TypeScript 7 provides the `tsc` binary used by `typecheck` and `next build`. The official TypeScript 6 compatibility package remains installed under the `typescript` module name because `typescript-eslint` still requires the TypeScript compiler API.
