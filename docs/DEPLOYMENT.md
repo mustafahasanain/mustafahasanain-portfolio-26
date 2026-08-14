@@ -31,21 +31,32 @@ future phase requires them, production values belong in
    dependencies from the committed npm lockfile, and runs `npm run verify`.
 3. After every quality gate passes, the runner connects over SSH on port `22`
    as `portfolio-deploy` with strict host-key verification.
-4. The runner invokes only:
+4. The runner sends only this remote command:
 
    ```bash
-   sudo /usr/local/sbin/deploy-mustafahasanain-portfolio <40-character-lowercase-commit-sha>
+   deploy <40-character-lowercase-commit-sha>
    ```
 
    The argument is the exact triggering `github.sha`, not a branch name.
-5. The server-side script builds a release, switches it into service through
+5. SSH forces the request through
+   `/usr/local/sbin/portfolio-deploy-ssh-command`, which reads the original
+   command and accepts only the exact `deploy <40-character-lowercase-commit-sha>`
+   format.
+6. After validation, the wrapper invokes:
+
+   ```bash
+   sudo /usr/local/sbin/deploy-mustafahasanain-portfolio <sha>
+   ```
+
+7. The deployment script builds a release, switches it into service through
    PM2 as `mustafahasanain-portfolio`, and checks
    `http://127.0.0.1:3002/`. Its non-zero exit status fails the workflow.
 
-Release creation, npm installation and build, environment-file handling, PM2,
-the internal port, health retries, rollback, and release retention remain the
-responsibility of the existing server script. If the new release fails its
-health check, that script automatically restores the previous release.
+Release creation, repository fetch and validation, npm installation and the
+production build, environment-file handling, PM2, the internal port, health
+checks and retries, rollback, and release retention remain the responsibility
+of the existing server deployment script. If the new release fails its health
+check, that script automatically restores the previous release.
 
 ## Failure and recovery
 

@@ -87,7 +87,7 @@ jobs:
             -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="${HOME}/.ssh/known_hosts" \
             "portfolio-deploy@${VPS_HOST}" \
-            "sudo /usr/local/sbin/deploy-mustafahasanain-portfolio '${DEPLOY_SHA}'"
+            "deploy ${DEPLOY_SHA}"
 
       - name: Remove SSH private key
         if: always()
