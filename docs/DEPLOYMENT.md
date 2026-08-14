@@ -11,7 +11,7 @@ values:
 - `VPS_HOST` — the confirmed public hostname or IP of the VPS.
 - `VPS_SSH_PRIVATE_KEY` — the dedicated, non-interactive private key for the
   `portfolio-deploy` account.
-- `VPS_SSH_KNOWN_HOSTS` — a verified OpenSSH `known_hosts` entry for the exact
+- `VPS_KNOWN_HOSTS` — a verified OpenSSH `known_hosts` entry for the exact
   value in `VPS_HOST` on port `22`.
 
 Obtain the host-key entry from the server administrator and verify its
