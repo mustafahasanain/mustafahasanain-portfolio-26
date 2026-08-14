@@ -9,6 +9,30 @@ import {
   type Theme,
 } from "@/lib/theme";
 
+interface ThemeSwitchLabels {
+  dark: string;
+  light: string;
+  currentTheme: string;
+  useTheme: string;
+}
+
+const defaultLabels: ThemeSwitchLabels = {
+  dark: "dark",
+  light: "light",
+  currentTheme: "Current theme: {current}. Switch to {next} theme",
+  useTheme: "Use {theme} theme",
+};
+
+function formatLabel(
+  template: string,
+  values: Record<string, string>,
+): string {
+  return Object.entries(values).reduce(
+    (label, [key, value]) => label.replace(`{${key}}`, value),
+    template,
+  );
+}
+
 function getThemeFromDocument(): Theme {
   const theme = document.documentElement.dataset.theme;
   return isTheme(theme) ? theme : DEFAULT_THEME;
@@ -58,13 +82,19 @@ function persistTheme(theme: Theme) {
   window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
 }
 
-export function ThemeSwitch() {
-  const theme = useSyncExternalStore(
+export function ThemeSwitch({
+  labels = defaultLabels,
+}: {
+  labels?: ThemeSwitchLabels;
+}) {
+  const theme = useSyncExternalStore<Theme>(
     subscribeToTheme,
     getThemeFromDocument,
     () => DEFAULT_THEME,
   );
-  const nextTheme = theme === "dark" ? "light" : "dark";
+  const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+  const currentThemeLabel = labels[theme];
+  const nextThemeLabel = labels[nextTheme];
 
   useLayoutEffect(() => {
     // React Strict Mode can restore the server attribute during development.
@@ -78,9 +108,14 @@ export function ThemeSwitch() {
       type="button"
       className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-primary hover:text-primary"
       onClick={() => persistTheme(nextTheme)}
-      aria-label={`Current theme: ${theme}. Switch to ${nextTheme} theme`}
+      aria-label={formatLabel(labels.currentTheme, {
+        current: currentThemeLabel,
+        next: nextThemeLabel,
+      })}
     >
-      <span aria-hidden="true">Use {nextTheme} theme</span>
+      <span aria-hidden="true">
+        {formatLabel(labels.useTheme, { theme: nextThemeLabel })}
+      </span>
     </button>
   );
 }

@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "http://127.0.0.1:3100";
+const port = process.env.PLAYWRIGHT_PORT ?? "3100";
+const baseURL = `http://127.0.0.1:${port}`;
+const useExternalServer = process.env.PLAYWRIGHT_EXTERNAL_SERVER === "true";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -20,11 +22,14 @@ export default defineConfig({
     },
   ],
   // Runs a fresh production server on a dedicated port, so `npm run build`
-  // must have run first.
-  webServer: {
-    command: "npm run start -- --hostname 127.0.0.1 --port 3100",
-    url: baseURL,
-    reuseExistingServer: false,
-    timeout: 120_000,
-  },
+  // must have run first. Local tooling can manage the same server externally
+  // when process-tree teardown is unavailable.
+  webServer: useExternalServer
+    ? undefined
+    : {
+        command: `node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port ${port}`,
+        url: baseURL,
+        reuseExistingServer: false,
+        timeout: 120_000,
+      },
 });
