@@ -38,6 +38,12 @@ Playwright needs its browser binaries once per machine:
 npx playwright install chromium
 ```
 
+## Deployment
+
+Production deployment runs only when an approved commit is pushed to `main`.
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the exact-SHA deployment flow
+and required GitHub configuration.
+
 ## Project structure
 
 ```
